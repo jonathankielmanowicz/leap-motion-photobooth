@@ -10,6 +10,8 @@ var timer = 0;
 var canvas;
 var sticker = null;
 var stickerArray = [];
+var timer = 0;
+var takingPic = false;
 
 function preload() {
   left = loadImage('assets/left.png');
@@ -35,9 +37,10 @@ function draw() {
   displayScreenshots();
 
   for (var i = 0; i < screenshots.length; i++) {
-    console.log(screenshots[i].hovered);
+    // console.log(screenshots[i].hovered);
   }
   loadStickers();
+  countDown();
 }
 
 function loadStickers() {
@@ -302,19 +305,45 @@ function displayScreenshots() {
       } else {
         screenshots[screenshots.length - 1 - i].hovered = false;
       }
-      // console.log(screenshots[screenshots.length-1-i].x);
-      // console.log(screenshots[screenshots.length-1-i].y);
-      // console.log(mouseX);
-      // console.log(mouseY);
-      // if (screenshots[screenshots.length-1-i].hovered) {
-      //   console.log('hovered');
-      // }
     }
     pop();
     push();
     imageMode(CENTER);
     image(left, 30, 540, 40, 40);
     image(right, 610, 540, 40, 40);
+    pop();
+  }
+}
+
+function countDown() {
+  if (takingPic) {
+    push();
+    timer++;
+    textAlign(CENTER);
+    textSize(240);
+    fill(255);
+    if ((timer >= 6) && (timer <= 10)) {
+      console.log('3');
+      text('3', 320, 240);
+    } else if ((timer >= 12) && (timer <= 16)) {
+      console.log('2');
+      text('2', 320, 240);
+    } else if ((timer == 18) && (timer <= 22)) {
+      console.log('1');
+      text('1', 320, 240);
+    } else if (timer == 24) {
+      // copy what's on the canvas
+      var shot = get(0, 0, 640, 480);
+      var screenshot = new Screenshot(shot);
+      shutter.play();
+      
+      // push it to the screenshots array
+      screenshots.push(screenshot);
+    
+      console.log('taking pic!');
+      timer = 0;
+      takingPic = false;
+    }
     pop();
   }
 }
@@ -329,13 +358,8 @@ function keyTyped() {
   }
   
   if (keyCode == 32) {
-    // copy what's on the canvas
-    var shot = get(0, 0, 640, 480);
-    var screenshot = new Screenshot(shot);
-    shutter.play();
-
-    // push it to the screenshots array
-    screenshots.push(screenshot);
+    // trigger countDown
+    takingPic = true;
   }
   if (key === 's') {
     // save something
