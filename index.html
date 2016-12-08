@@ -19,31 +19,6 @@
 
   </head>
   <body>
-    <div id="toolbar-wrapper">
-      <div id="toolbar">
-        <div class="mode-wrapper">
-          <span class="label">Mode:</span>
-          <select onchange="updateMode(this.value);">
-            <option value="normal">Normal</option>
-            <option value="ellipse">Ellipse</option>
-            <option value="square">Square</option>
-          </select>
-        </div>
-        <div class="size-wrapper">
-          <span class="label">Size:</span>
-          <input id="size-slider" type="range" min="10" max="20" value="10" step="1" oninput="updateTextInput(this.value);"> 
-          <span id="size-slider-display">10</span>
-        </div>
-        <div class="color-wrapper">
-          <span class="label">Color:</span>
-          <select onchange="updateColor(this.value);">
-            <option value="normal">Normal</option>
-            <option value="greyscale">Greyscale</option>
-            <option value="negative">Negative</option>
-          </select>
-        </div>
-      </div>
-    </div>
     <div id="canvas-wrapper"></div>
   </body>
 </html>
