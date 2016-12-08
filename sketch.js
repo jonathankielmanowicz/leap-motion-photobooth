@@ -12,8 +12,11 @@ var sticker = null;
 var stickerArray = [];
 var timer = 0;
 var takingPic = false;
+
 // our Leap motion hand sensor controller object (instantiated inside of 'setup');
 var leapController;
+var loaded = 0;
+var loadState = false;
 
 // x & y position of our user controlled character
 var x = 500;
@@ -29,9 +32,18 @@ function preload() {
 function setup() {
   pixelDensity(1);
   canvas = createCanvas(640, 600);
-  capture = createCapture(VIDEO);
+  // capture = createCapture(VIDEO);
+  capture = createCapture({
+                            video: {
+                                    mandatory: {
+                                                minWidth: 320,
+                                                minHeight: 240,
+                                                maxWidth: 320,
+                                                maxHeight: 240
+                                              }
+                                  }
+                          });
   capture.hide();
-  capture.size(640, 480);
   noStroke();
   background(255);
   canvas.parent("#canvas-wrapper");
@@ -52,6 +64,8 @@ function setup() {
 
 function draw() {
   currentFilter.display();
+  // currentFilter.state = 1;
+  // currentFilter.shape.type = "ellipse";
   displayScreenshots();
 
   for (var i = 0; i < screenshots.length; i++) {
@@ -59,7 +73,7 @@ function draw() {
   }
   loadStickers();
   countDown();
-  
+  loadWheel(loadState);
   fill(255);
   ellipse(x, y, 25, 25);
 }
@@ -175,7 +189,7 @@ function normalVideoFeed(colors) {
         // index[2] = B, [3] = A
         var end = capture.pixels.length;
         var index2 = end - (x + capture.width * capture.height - y * capture.width) * 4 - 4;
-        var index = (x + y * capture.width) * 4;
+        var index = (x*2 + y*2 * capture.width*2) * 4;
 
         var r = capture.pixels[index2 + 0];
         var g = capture.pixels[index2 + 1];
@@ -194,10 +208,10 @@ function normalVideoFeed(colors) {
           b = r;
         }
 
-        pixels[index + 0] = r;
-        pixels[index + 1] = g;
-        pixels[index + 2] = b;
-        pixels[index + 3] = 255;
+        pixels[(index + 0)] = r;
+        pixels[(index + 1)] = g;
+        pixels[(index + 2)] = b;
+        pixels[(index + 3)] = 255;
       }
     }
     updatePixels();
@@ -209,7 +223,7 @@ function shapeVideoFeed(colors, shape) {
   // expose the pixel array in our video stream
   capture.loadPixels();
   
-  console.log(shape.size);
+  // console.log(shape.size);
 
   // make sure we have a valid frame of video by ensuring that there is data
   // in this array
@@ -345,13 +359,13 @@ function countDown() {
     fill(255);
     if ((timer >= 6) && (timer <= 10)) {
       console.log('3');
-      text('3', 320, 240);
+      text('3', 320, 280);
     } else if ((timer >= 12) && (timer <= 16)) {
       console.log('2');
-      text('2', 320, 240);
-    } else if ((timer == 18) && (timer <= 22)) {
+      text('2', 320, 280);
+    } else if ((timer >= 18) && (timer <= 22)) {
       console.log('1');
-      text('1', 320, 240);
+      text('1', 320, 280);
     } else if (timer == 24) {
       // copy what's on the canvas
       var shot = get(0, 0, 640, 480);
@@ -402,7 +416,7 @@ function Screenshot(shot) {
 function updateTextInput(val) {
   document.getElementById('size-slider-display').innerText = document.getElementById('size-slider').value;
   currentFilter.shape.size = int(val);
-  console.log(currentFilter.shape.size);
+  // console.log(currentFilter.shape.size);
 }
 
 function updateMode(mode) {
@@ -421,6 +435,22 @@ function updateColor(color) {
   currentFilter.color = color;
 }
 
+function loadWheel(bool) {
+  if (bool == true) {
+    console.log(loaded);
+    loaded++;
+    push();
+    noFill();
+    strokeWeight(10);
+    arc(320, 240, 60, 60, 0, loaded / 6);
+    pop();
+    if (loaded/6 >= 2*PI) {
+      console.log('take a pic')
+    }
+  } else {
+    loaded = 0;
+  }
+}
 // this function runs every time the leap provides us with hand tracking data
 // it is passed a 'frame' object as an argument - we will dig into this object
 // and what it contains throughout these tutorials
@@ -430,6 +460,13 @@ function handleHandData(frame) {
   if (frame.hands.length == 1) {
     // get the position of this hand
     var handPosition = frame.hands[0].stabilizedPalmPosition;
+    var grab = frame.hands[0].grabStrength;
+    if (grab == 1) {
+      loadState = true;
+      takingPic = true;
+    } else {
+      loadState = false;
+    }
     
     // grab the x, y & z components of the hand position
     // these numbers are measured in millimeters
