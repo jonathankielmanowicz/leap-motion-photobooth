@@ -13,6 +13,12 @@ var timer = 0;
 var takingPic = false;
 var currentScreenshot;
 var appState = 1;
+var showMenu = false;
+var modeBtn = new menuButton('mode',0);
+var sizeBtn = new menuButton('size',100);
+var colorBtn = new menuButton('color',200);
+
+var menu = [modeBtn, sizeBtn, colorBtn]
 
 // our Leap motion hand sensor controller object (instantiated inside of 'setup');
 var leapController;
@@ -75,7 +81,46 @@ function draw() {
   loadWheel(loadState);
   fill(255);
   ellipse(x, y, 25, 25);
+  displayMenu();
+}
+
+function displayMenu() {
+  //if the hand hovers onto the menu region
+  if (x >= width - 100 && showMenu === false) {
+    showMenu = true;
+  //if the hand hovers off of the menu region
+  } else if(x < width - 100 && showMenu === true) {
+    showMenu = false;
+  }
   
+  for(var i=0; i<menu.length; i++) {
+    menu[i].display();
+  }
+  
+}
+
+function menuButton(title, yPos) {
+  this.title = title;
+  this.h = 100;
+  this.w = 100;
+  this.xPos = 640;
+  this.yPos = yPos;
+  this.transitionStatus = false;
+  this.show = function() {
+    if(this.xPos > 640-this.w) {
+      this.xPos -= 20;
+    }
+  }
+  this.display = function() {
+    if(showMenu == true) {
+      this.show();
+    } else {
+      // this.hide();
+    }
+    fill(0, 0, 0, 255);
+    console.log(this.xPos);
+    rect(this.xPos, this.yPos, this.w, this.h);
+  }
 }
 
 function loadStickers() {
