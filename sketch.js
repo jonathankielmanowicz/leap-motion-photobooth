@@ -478,11 +478,13 @@ function handleHandData(frame) {
     var hy = handPosition[1];
     var hz = handPosition[2];
     
+    console.log("hx: "+hx+" | hy: "+hy);
+    
     // x is left-right, y is up-down, z is forward-back
     // for this example we will use x & y to move the circle around the screen
     // let's map the x & y values to screen coordinates
     // note that determining the correct values for your application takes some trial and error!
-    x = map(hx, -200, 200, 100, 400);
-    y = map(hy,    0, 500, 500,   0);
+    x = map(hx, -100, 170, 0, width);
+    y = map(hy,    150, 330, 500,   0);
   }
 }
