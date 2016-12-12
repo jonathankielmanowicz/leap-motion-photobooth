@@ -3,7 +3,6 @@ var currentFilter = new camFilter();
 var screenshots = [];
 var oldpos = 0;
 var newpos = 0;
-var oldend = 640;
 var left, right, space;
 var count = 1; //for saving the images
 var timer = 0;
@@ -12,6 +11,8 @@ var sticker = null;
 var stickerArray = [];
 var timer = 0;
 var takingPic = false;
+var currentScreenshot;
+var appState = 1;
 
 // our Leap motion hand sensor controller object (instantiated inside of 'setup');
 var leapController;
@@ -63,19 +64,19 @@ function setup() {
 }
 
 function draw() {
-  currentFilter.display();
-  // currentFilter.state = 1;
-  // currentFilter.shape.type = "ellipse";
-  displayScreenshots();
-
-  for (var i = 0; i < screenshots.length; i++) {
-    // console.log(screenshots[i].hovered);
+  console.log(appState);
+  if (appState == 1) {
+    currentFilter.display();
+    countDown();
+  } else {
+    image(currentImage, 0, 0, 640, 480);
   }
+  displayScreenshots();
   loadStickers();
-  countDown();
   loadWheel(loadState);
   fill(255);
   ellipse(x, y, 25, 25);
+  
 }
 
 function loadStickers() {
@@ -134,7 +135,8 @@ function mousePressed() {
   for (var i = 0; i < screenshots.length; i++) {
     if (screenshots[i].hovered) {
       currentFilter.on = 0;
-      image(screenshots[i].shot, 0, 0, 640, 480);
+      currentImage = screenshots[i].shot;
+      appState = 0; //reviewing images
     }
   }
   
@@ -388,6 +390,7 @@ function keyTyped() {
   //   currentFilter.on = 1;
   // }
   if (key === 'c') {
+    appState = 1;
     currentFilter.on = 1;
     stickerArray = [];
   }
@@ -436,16 +439,19 @@ function updateColor(color) {
 }
 
 function loadWheel(bool) {
-  if (bool == true) {
+  
+  if (bool == true && !takingPic && appState == 1 ) {
     console.log(loaded);
     loaded++;
     push();
     noFill();
+    stroke(0);
     strokeWeight(10);
     arc(320, 240, 60, 60, 0, loaded / 6);
     pop();
     if (loaded/6 >= 2*PI) {
-      console.log('take a pic')
+      console.log('take a pic');
+      takingPic = true;
     }
   } else {
     loaded = 0;
@@ -463,7 +469,6 @@ function handleHandData(frame) {
     var grab = frame.hands[0].grabStrength;
     if (grab == 1) {
       loadState = true;
-      takingPic = true;
     } else {
       loadState = false;
     }
