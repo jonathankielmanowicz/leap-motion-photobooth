@@ -26,7 +26,7 @@ var y = 500;
 function preload() {
   left = loadImage('assets/left.png');
   right = loadImage('assets/right.png');
-  space = loadImage('assets/spacebar.png');
+  fist = loadImage('assets/fist.png');
   shutter = loadSound('assets/shutter.wav');
 }
 
@@ -320,7 +320,7 @@ function displayScreenshots() {
   if (screenshots.length < 1) {
     push();
     imageMode(CENTER);
-    image(space, 320, 540, 250, 75);
+    image(fist, 320, 540, 100, 100);
     pop();
   }
   if (screenshots.length > 0) {
@@ -477,8 +477,6 @@ function handleHandData(frame) {
     var hx = handPosition[0];
     var hy = handPosition[1];
     var hz = handPosition[2];
-    
-    console.log("hx: "+hx+" | hy: "+hy);
     
     // x is left-right, y is up-down, z is forward-back
     // for this example we will use x & y to move the circle around the screen
