@@ -64,7 +64,6 @@ function setup() {
 }
 
 function draw() {
-  console.log(appState);
   if (appState == 1) {
     currentFilter.display();
     countDown();
@@ -447,7 +446,7 @@ function loadWheel(bool) {
     noFill();
     stroke(0);
     strokeWeight(10);
-    arc(320, 240, 60, 60, 0, loaded / 6);
+    arc(x, y, 60, 60, 0, loaded / 6);
     pop();
     if (loaded/6 >= 2*PI) {
       console.log('take a pic');
