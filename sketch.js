@@ -105,7 +105,13 @@ function menuButton(title, yPos) {
   this.w = 100;
   this.xPos = 640;
   this.yPos = yPos;
-  this.transitionStatus = false;
+  this.hovered = function() {
+    if(x >= this.xPos && y >= this.yPos && y <= this.yPos + this.h)  {
+      console.log('true');
+      return true;
+    }
+    return false;
+  }
   this.show = function() {
     if(this.xPos > 640-this.w) {
       this.xPos -= 20;
@@ -117,13 +123,19 @@ function menuButton(title, yPos) {
     }
   } 
   this.display = function() {
-    if(showMenu == true) {
+    if(showMenu === true) {
       this.show();
     } else {
       this.hide();
     }
-    fill(0, 0, 0, 100);
+    stroke(0, 255);
+    if(this.hovered()) {
+      fill(0, 255);
+    } else {
+      fill(0, 100);
+    }
     rect(this.xPos, this.yPos, this.w, this.h);
+    noStroke();
   }
 }
 
