@@ -15,8 +15,8 @@ var currentScreenshot;
 var appState = 1;
 var showMenu = false;
 var modeBtn = new menuButton('mode',0);
-var sizeBtn = new menuButton('size',100);
-var colorBtn = new menuButton('color',200);
+var sizeBtn = new menuButton('size',1 * modeBtn.h);
+var colorBtn = new menuButton('color',2 * modeBtn.h);
 
 var menu = [modeBtn, sizeBtn, colorBtn]
 
@@ -78,10 +78,10 @@ function draw() {
   }
   displayScreenshots();
   loadStickers();
+  displayMenu();
   loadWheel(loadState);
   fill(255);
   ellipse(x, y, 25, 25);
-  displayMenu();
 }
 
 function displayMenu() {
@@ -101,7 +101,7 @@ function displayMenu() {
 
 function menuButton(title, yPos) {
   this.title = title;
-  this.h = 100;
+  this.h = 160;
   this.w = 100;
   this.xPos = 640;
   this.yPos = yPos;
@@ -112,7 +112,6 @@ function menuButton(title, yPos) {
     }
   }
   this.hide = function() {
-    console.log(this.xPos);
     if(this.xPos <= 640) {
       this.xPos += 20;
     }
@@ -123,7 +122,7 @@ function menuButton(title, yPos) {
     } else {
       this.hide();
     }
-    stroke(0, 0, 0, 255);
+    fill(0, 0, 0, 100);
     rect(this.xPos, this.yPos, this.w, this.h);
   }
 }
