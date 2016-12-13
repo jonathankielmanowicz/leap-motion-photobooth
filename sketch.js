@@ -262,7 +262,13 @@ function camFilter() {
         textAlign(CENTER);
         fill(0, 255);
         textSize(30);
-        text("SWIPE TO CHANGE", width/2, 460);
+        if(editFilter != 2) {
+          text("SWIPE TO CHANGE", width/2, 460);
+        } else { //editFilter == 2
+          text(this.shape.size, width/2, 460);
+          var unit = width/6;
+          this.shape.size = 11 + Math.floor(x/unit);
+        }
         exitBtn.display();
       }
       
