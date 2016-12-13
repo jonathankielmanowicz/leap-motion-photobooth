@@ -17,6 +17,7 @@ var showMenu = false;
 var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
 var wheelDisabled = false;
 var swipeCooldown = 0;
+var exitBtn = new ExitBtn();
 var modeBtn = new menuButton('mode',0);
 var sizeBtn = new menuButton('size',1 * modeBtn.h);
 var colorBtn = new menuButton('color',2 * modeBtn.h);
@@ -252,11 +253,32 @@ function camFilter() {
         fill(0, 255);
         textSize(30);
         text("SWIPE TO CHANGE", width/2, 460);
+        exitBtn.display();
       }
       
     } else {
       // don't do anything
     }
+  }
+}
+
+function ExitBtn() {
+  this.xPos = 0;
+  this.yPos = 0;
+  this.h = 50;
+  this.w = 50;
+  this.hovered = function() {
+    if( x > this.xPos && x < this.xPos + this.w && y > this.yPos && y < this.yPos + this.h ) {
+      return true;
+    }
+    return false;
+  }
+  this.display = function() {
+    fill(0,255);
+    rect(this.xPos, this.yPos, this.w, this.h);
+    fill(255);
+    textSize(40);
+    text("X", 25,40);
   }
 }
 
@@ -553,7 +575,9 @@ function loadWheel(bool) {
         editFilter = 2;
       } else if (colorBtn.hovered() && editFilter != 3) {
         editFilter = 3;
-      } else if (showMenu == false) {
+      } else if (exitBtn.hovered()) {
+        editFilter = 0;
+      } else if (showMenu == false && editFilter === 0) {
         console.log('take a pic');
         takingPic = true;
       }
