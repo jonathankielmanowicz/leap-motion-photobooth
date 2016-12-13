@@ -107,7 +107,6 @@ function menuButton(title, yPos) {
   this.yPos = yPos;
   this.hovered = function() {
     if(x >= this.xPos && y >= this.yPos && y <= this.yPos + this.h)  {
-      console.log('true');
       return true;
     }
     return false;
