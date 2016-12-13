@@ -286,7 +286,11 @@ function ExitBtn() {
 
 function normalVideoFeed(colors) {
   background(255);
-  loadPixels();
+  
+  var tempImage = new p5.Image(320,240);
+  tempImage.loadPixels();
+  
+//  loadPixels();
   capture.loadPixels();
   if (capture.pixels.length > 0) {
     // console.log(capture.width + ", "+ capture.height);
@@ -308,7 +312,8 @@ function normalVideoFeed(colors) {
         // index[2] = B, [3] = A
         var end = capture.pixels.length;
         var index2 = end - (x + capture.width * capture.height - y * capture.width) * 4 - 4;
-        var index = (x*2 + y*2 * capture.width*2) * 4;
+//        var index = (x*2 + y*2 * capture.width*2) * 4;
+        var index = (x + y * capture.width) * 4;
 
         var r = capture.pixels[index2 + 0];
         var g = capture.pixels[index2 + 1];
@@ -327,13 +332,14 @@ function normalVideoFeed(colors) {
           b = r;
         }
 
-        pixels[(index + 0)] = r;
-        pixels[(index + 1)] = g;
-        pixels[(index + 2)] = b;
-        pixels[(index + 3)] = 255;
+        tempImage.pixels[(index + 0)] = r;
+        tempImage.pixels[(index + 1)] = g;
+        tempImage.pixels[(index + 2)] = b;
+        tempImage.pixels[(index + 3)] = 255;
       }
     }
-    updatePixels();
+    tempImage.updatePixels();
+    image(tempImage, 0, 0, 640, 480);
   }
 }
 
