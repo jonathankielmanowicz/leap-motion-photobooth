@@ -75,7 +75,7 @@ function setup() {
 }
 
 function draw() {
-  
+  background(255);
   if (appState == 1) {
     currentFilter.display();
     countDown();
@@ -587,10 +587,9 @@ function loadWheel(bool) {
           takingPic = true;
         }
       } else {
-        if (y < 480) {
-          appState = 1;
-          currentFilter.on = 1;
-        }
+        save(screenshots[screenshots.length - 1].shot, 'myImage' + count + '.png');
+        console.log('image saved!');
+        count++;
       }
     }
   } else {
@@ -622,10 +621,10 @@ function handleHandData(frame) {
             case "swipe": //swipe detected
                 if(gesture.state == "start" && swipeCooldown == 0) {
                   currentFilter.swipe();
-                  swipeCooldown = 15;
-                }
-                if(gesture.state == "start" && swipeCooldown == 0) {
-                  // swipe through screenshots here
+                  if(appState == 0) {
+                    appState = 1;
+                    currentFilter.on = 1;
+                  }
                   swipeCooldown = 15;
                 }
                 break;
