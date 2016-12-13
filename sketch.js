@@ -14,6 +14,8 @@ var takingPic = false;
 var currentScreenshot;
 var appState = 1;
 var showMenu = false;
+var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
+var wheelDisabled = false;
 var modeBtn = new menuButton('mode',0);
 var sizeBtn = new menuButton('size',1 * modeBtn.h);
 var colorBtn = new menuButton('color',2 * modeBtn.h);
@@ -499,21 +501,37 @@ function updateColor(color) {
 
 function loadWheel(bool) {
   
-  if (bool == true && !takingPic && appState == 1 ) {
-    console.log(loaded);
+  if (bool == true && !takingPic && appState == 1 && wheelDisabled == false) {
+  
+    // console.log(loaded);
     loaded++;
     push();
     noFill();
-    stroke(0);
+    stroke(255,0,0);
     strokeWeight(10);
     arc(x, y, 60, 60, 0, loaded / 6);
     pop();
     if (loaded/6 >= 2*PI) {
-      console.log('take a pic');
-      takingPic = true;
+      
+      wheelDisabled = true;
+      
+      if (modeBtn.hovered() && editFilter != 1) {
+        editFilter = 1;
+      } else if (sizeBtn.hovered() && editFilter != 2) {
+        editFilter = 2;
+      } else if (colorBtn.hovered() && editFilter != 3) {
+        editFilter = 3;
+      } else if (showMenu == false) {
+        console.log('take a pic');
+        takingPic = true;
+      }
     }
+      
   } else {
     loaded = 0;
+    if(bool == false) {
+      wheelDisabled = false;
+    }
   }
 }
 // this function runs every time the leap provides us with hand tracking data
