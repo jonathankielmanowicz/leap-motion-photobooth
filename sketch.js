@@ -19,9 +19,9 @@ var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
 var viewSs = false;
 var wheelDisabled = false;
 var swipeCooldown = 0;
-var modeBtn = new menuButton('mode',0);
-var sizeBtn = new menuButton('size',1 * modeBtn.h);
-var colorBtn = new menuButton('color',2 * modeBtn.h);
+var modeBtn = new menuButton('Mode',0);
+var sizeBtn = new menuButton('Size',1 * modeBtn.h);
+var colorBtn = new menuButton('Color',2 * modeBtn.h);
 
 var menu = [modeBtn, sizeBtn, colorBtn]
 
@@ -147,6 +147,10 @@ function menuButton(title, yPos) {
       fill(0, 100);
     }
     rect(this.xPos, this.yPos, this.w, this.h);
+    fill(255);
+    textAlign(CENTER);
+    textSize(20);
+    text(title, this.xPos + (.5 * this.w), this.yPos + (.5 * this.h));
     noStroke();
   }
 }
