@@ -2,6 +2,7 @@ var capture;
 var currentFilter = new camFilter();
 var screenshots = [];
 var oldpos = 0;
+var oldend = 640;
 var newpos = 0;
 var left, right, space;
 var count = 1; //for saving the images
@@ -379,11 +380,11 @@ function shapeVideoFeed(colors, shape) {
         fill(r, g, b);
 
         if (shape.type == "ellipse") {
-          ellipse(capture.width - x - (.5 * shape.size), y + (.5 * shape.size), shape.size, shape.size);
+          ellipse((capture.width - x - (.5 * shape.size)) * 2, (y + (.5 * shape.size)) * 2, (shape.size) * 2, (shape.size) * 2);
         } else if (shape.type == "square") {
           push()
           rectMode(CENTER);
-          rect(capture.width - x - (.5 * shape.size), y + (.5 * shape.size), shape.size, shape.size);
+          rect((capture.width - x - (.5 * shape.size)) * 2, (y + (.5 * shape.size)) * 2, (shape.size) * 2, (shape.size) * 2);
           pop();
         }
       }
