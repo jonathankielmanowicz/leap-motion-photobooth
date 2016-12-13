@@ -16,6 +16,7 @@ var currentScreenshot;
 var appState = 1;
 var showMenu = false;
 var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
+var viewSs = false;
 var wheelDisabled = false;
 var swipeCooldown = 0;
 var exitBtn = new ExitBtn();
@@ -556,7 +557,7 @@ function updateColor(color) {
 
 function loadWheel(bool) {
   
-  if (bool == true && !takingPic && appState == 1 && wheelDisabled == false) {
+  if (bool == true && !takingPic && wheelDisabled == false) {
   
     // console.log(loaded);
     loaded++;
@@ -570,20 +571,35 @@ function loadWheel(bool) {
       
       wheelDisabled = true;
       
-      if (modeBtn.hovered() && editFilter != 1) {
-        editFilter = 1;
-      } else if (sizeBtn.hovered() && editFilter != 2) {
-        editFilter = 2;
-      } else if (colorBtn.hovered() && editFilter != 3) {
-        editFilter = 3;
-      } else if (exitBtn.hovered()) {
-        editFilter = 0;
-      } else if (showMenu == false && editFilter === 0 && y < 480) {
-        console.log('take a pic');
-        takingPic = true;
+        // click the screenshot
+      for (var i = 0; i < screenshots.length; i++) {
+        if (screenshots[i].hovered) {
+          currentFilter.on = 0;
+          currentImage = screenshots[i].shot;
+          appState = 0; //reviewing images
+        }
+      }
+      
+      if (appState == 1) {  
+        if (modeBtn.hovered() && editFilter != 1) {
+          editFilter = 1;
+        } else if (sizeBtn.hovered() && editFilter != 2) {
+          editFilter = 2;
+        } else if (colorBtn.hovered() && editFilter != 3) {
+          editFilter = 3;
+        } else if (exitBtn.hovered()) {
+          editFilter = 0;
+        } else if (showMenu == false && editFilter === 0 && y < 480) {
+          console.log('take a pic');
+          takingPic = true;
+        }
+      } else {
+        if (y < 480) {
+          appState = 1;
+          currentFilter.on = 1;
+        }
       }
     }
-      
   } else {
     loaded = 0;
     if(bool == false) {
@@ -613,6 +629,10 @@ function handleHandData(frame) {
             case "swipe":
                 if(gesture.state == "start" && swipeCooldown == 0) {
                   currentFilter.swipe();
+                  swipeCooldown = 15;
+                }
+                if(gesture.state == "start" && swipeCooldown == 0) {
+                  // swipe through screenshots here
                   swipeCooldown = 15;
                 }
                 break;
