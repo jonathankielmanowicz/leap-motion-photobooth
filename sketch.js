@@ -236,6 +236,15 @@ function camFilter() {
           this.state = 1;
         }
         break;
+      case 3:
+        if(this.color == "normal") {
+          this.color = "negative";
+        } else if (this.color == "negative") {
+          this.color = "greyscale";
+        } else {
+          this.color = "normal";
+        }
+        break;
       default:
         break;
     }
@@ -610,7 +619,7 @@ function handleHandData(frame) {
     if(frame.valid && frame.gestures.length > 0){
       frame.gestures.forEach(function(gesture){
           switch (gesture.type){
-            case "swipe":
+            case "swipe": //swipe detected
                 if(gesture.state == "start" && swipeCooldown == 0) {
                   currentFilter.swipe();
                   swipeCooldown = 15;
