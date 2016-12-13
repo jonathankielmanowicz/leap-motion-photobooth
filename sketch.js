@@ -111,14 +111,19 @@ function menuButton(title, yPos) {
       this.xPos -= 20;
     }
   }
+  this.hide = function() {
+    console.log(this.xPos);
+    if(this.xPos <= 640) {
+      this.xPos += 20;
+    }
+  } 
   this.display = function() {
     if(showMenu == true) {
       this.show();
     } else {
-      // this.hide();
+      this.hide();
     }
-    fill(0, 0, 0, 255);
-    console.log(this.xPos);
+    stroke(0, 0, 0, 255);
     rect(this.xPos, this.yPos, this.w, this.h);
   }
 }
