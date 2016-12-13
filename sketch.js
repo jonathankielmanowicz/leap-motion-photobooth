@@ -16,6 +16,7 @@ var appState = 1;
 var showMenu = false;
 var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
 var wheelDisabled = false;
+var swipeCooldown = 0;
 var modeBtn = new menuButton('mode',0);
 var sizeBtn = new menuButton('size',1 * modeBtn.h);
 var colorBtn = new menuButton('color',2 * modeBtn.h);
@@ -72,12 +73,19 @@ function setup() {
 }
 
 function draw() {
+  
   if (appState == 1) {
     currentFilter.display();
     countDown();
   } else {
     image(currentImage, 0, 0, 640, 480);
   }
+  
+  if (swipeCooldown > 0) {
+    swipeCooldown -= 1;
+    console.log(swipeCooldown);
+  }
+  
   displayScreenshots();
   loadStickers();
   displayMenu();
@@ -85,6 +93,7 @@ function draw() {
   fill(255);
   ellipse(x, y, 25, 25);
 }
+
 
 function displayMenu() {
   //if the hand hovers onto the menu region
@@ -213,15 +222,38 @@ function camFilter() {
   };
   this.color = "normal";
   this.opacity;
+  this.swipe = function() {
+    switch(editFilter) {
+      case 1: //change mode
+        if(this.shape.type == "ellipse" && this.state == 1) {
+          this.shape.type = "square";
+        } else if (this.state == 1) {
+          this.state = 0;
+        } else {
+          this.shape.type = "ellipse";
+          this.state = 1;
+        }
+        break;
+      default:
+        break;
+    }
+  }
   this.display = function() {
     if (this.on === 1) {
-      // console.log("display");
       if (this.state === 0) {
         normalVideoFeed(this.color);
       } else {
         background(255);
         shapeVideoFeed(this.color, this.shape);
       }
+      
+      if(editFilter != 0) {
+        textAlign(CENTER);
+        fill(0, 255);
+        textSize(30);
+        text("SWIPE TO CHANGE", width/2, 460);
+      }
+      
     } else {
       // don't do anything
     }
@@ -548,6 +580,19 @@ function handleHandData(frame) {
       loadState = true;
     } else {
       loadState = false;
+    }
+    
+    if(frame.valid && frame.gestures.length > 0){
+      frame.gestures.forEach(function(gesture){
+          switch (gesture.type){
+            case "swipe":
+                if(gesture.state == "start" && swipeCooldown == 0) {
+                  currentFilter.swipe();
+                  swipeCooldown = 15;
+                }
+                break;
+          }
+      });
     }
     
     // grab the x, y & z components of the hand position
