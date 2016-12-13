@@ -152,10 +152,10 @@ function menuButton(title, yPos) {
 }
 
 function loadStickers() {
-  if (sticker && mouseY < 480 && currentFilter.on) {
+  if (sticker && y < 480 && currentFilter.on) {
     push();
     imageMode(CENTER);
-    image(sticker, mouseX, mouseY, 40, 40);
+    image(sticker, x, y, 40, 40);
     pop();
   }  
   for (var i = 0; i < stickerArray.length; i++) {
@@ -198,9 +198,9 @@ function mousePressed() {
   //     currentFilter.color = "normal";
   //   }
   // }
-  if (sticker && mouseY < 480 && currentFilter.on) {
-    var x = mouseX;
-    var y = mouseY;
+  if (sticker && y < 480 && currentFilter.on) {
+    var x = x;
+    var y = y;
     var s = new Sticker(sticker, x, y);
     stickerArray.push(s);
   }
@@ -291,8 +291,8 @@ function normalVideoFeed(colors) {
     // console.log(capture.width + ", "+ capture.height);
     // console.log(capture.pixels.length);
     var skip = 1;
-    // if (mouseY < 480) {
-    //   skip = int(map(mouseX, 0, width, 1, 10));
+    // if (y < 480) {
+    //   skip = int(map(x, 0, width, 1, 10));
     // } else {
     //   skip = 1;
     // }
@@ -410,15 +410,15 @@ function displayScreenshots() {
   // it has a variable speed
   // named shiftspeed
   var shiftspeed = 20;
-  if (mouseY > 480) {
-    if (mouseX < 40) {
+  if (y > 480) {
+    if (x < 40) {
       if (oldpos > 0) {
         newpos += shiftspeed;
         oldpos -= shiftspeed;
         oldend -= shiftspeed;
       }
     }
-    if (mouseX > 600) {
+    if (x > 600) {
       if (screenshots.length * 160 > oldend) {
         newpos -= shiftspeed;
         oldpos += shiftspeed;
@@ -448,9 +448,9 @@ function displayScreenshots() {
       screenshots[screenshots.length - 1 - i].posX = i * 160;
       screenshots[screenshots.length - 1 - i].posY = 480;
 
-      if ((mouseX - newpos > screenshots[screenshots.length - 1 - i].posX) &&
-        (mouseX - newpos < screenshots[screenshots.length - 1 - i].posX + 160) &&
-        (mouseY > screenshots[screenshots.length - 1 - i].posY)) {
+      if ((x - newpos > screenshots[screenshots.length - 1 - i].posX) &&
+        (x - newpos < screenshots[screenshots.length - 1 - i].posX + 160) &&
+        (y > screenshots[screenshots.length - 1 - i].posY)) {
         fill(51, 51, 51, 150);
         rect(screenshots[screenshots.length - 1 - i].posX,
           screenshots[screenshots.length - 1 - i].posY, 160, 120);
@@ -578,7 +578,7 @@ function loadWheel(bool) {
         editFilter = 3;
       } else if (exitBtn.hovered()) {
         editFilter = 0;
-      } else if (showMenu == false && editFilter === 0) {
+      } else if (showMenu == false && editFilter === 0 && y < 480) {
         console.log('take a pic');
         takingPic = true;
       }
