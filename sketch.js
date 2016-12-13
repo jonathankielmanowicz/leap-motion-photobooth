@@ -13,6 +13,16 @@ var timer = 0;
 var takingPic = false;
 var currentScreenshot;
 var appState = 1;
+var showMenu = false;
+var editFilter = 0; //0 for no edit, 1 for mode, 2 for size, 3 for color
+var wheelDisabled = false;
+var swipeCooldown = 0;
+var exitBtn = new ExitBtn();
+var modeBtn = new menuButton('mode',0);
+var sizeBtn = new menuButton('size',1 * modeBtn.h);
+var colorBtn = new menuButton('color',2 * modeBtn.h);
+
+var menu = [modeBtn, sizeBtn, colorBtn]
 
 // our Leap motion hand sensor controller object (instantiated inside of 'setup');
 var leapController;
@@ -64,18 +74,80 @@ function setup() {
 }
 
 function draw() {
+  
   if (appState == 1) {
     currentFilter.display();
     countDown();
   } else {
     image(currentImage, 0, 0, 640, 480);
   }
+  
+  if (swipeCooldown > 0) {
+    swipeCooldown -= 1;
+    console.log(swipeCooldown);
+  }
+  
   displayScreenshots();
   loadStickers();
+  displayMenu();
   loadWheel(loadState);
   fill(255);
   ellipse(x, y, 25, 25);
+}
+
+
+function displayMenu() {
+  //if the hand hovers onto the menu region
+  if (x >= width - 100 && showMenu === false) {
+    showMenu = true;
+  //if the hand hovers off of the menu region
+  } else if(x < width - 100 && showMenu === true) {
+    showMenu = false;
+  }
   
+  for(var i=0; i<menu.length; i++) {
+    menu[i].display();
+  }
+  
+}
+
+function menuButton(title, yPos) {
+  this.title = title;
+  this.h = 160;
+  this.w = 100;
+  this.xPos = 640;
+  this.yPos = yPos;
+  this.hovered = function() {
+    if(x >= this.xPos && y >= this.yPos && y <= this.yPos + this.h)  {
+      return true;
+    }
+    return false;
+  }
+  this.show = function() {
+    if(this.xPos > 640-this.w) {
+      this.xPos -= 20;
+    }
+  }
+  this.hide = function() {
+    if(this.xPos <= 640) {
+      this.xPos += 20;
+    }
+  } 
+  this.display = function() {
+    if(showMenu === true) {
+      this.show();
+    } else {
+      this.hide();
+    }
+    stroke(0, 255);
+    if(this.hovered()) {
+      fill(0, 255);
+    } else {
+      fill(0, 100);
+    }
+    rect(this.xPos, this.yPos, this.w, this.h);
+    noStroke();
+  }
 }
 
 function loadStickers() {
@@ -151,18 +223,62 @@ function camFilter() {
   };
   this.color = "normal";
   this.opacity;
+  this.swipe = function() {
+    switch(editFilter) {
+      case 1: //change mode
+        if(this.shape.type == "ellipse" && this.state == 1) {
+          this.shape.type = "square";
+        } else if (this.state == 1) {
+          this.state = 0;
+        } else {
+          this.shape.type = "ellipse";
+          this.state = 1;
+        }
+        break;
+      default:
+        break;
+    }
+  }
   this.display = function() {
     if (this.on === 1) {
-      // console.log("display");
       if (this.state === 0) {
         normalVideoFeed(this.color);
       } else {
         background(255);
         shapeVideoFeed(this.color, this.shape);
       }
+      
+      if(editFilter != 0) {
+        textAlign(CENTER);
+        fill(0, 255);
+        textSize(30);
+        text("SWIPE TO CHANGE", width/2, 460);
+        exitBtn.display();
+      }
+      
     } else {
       // don't do anything
     }
+  }
+}
+
+function ExitBtn() {
+  this.xPos = 0;
+  this.yPos = 0;
+  this.h = 50;
+  this.w = 50;
+  this.hovered = function() {
+    if( x > this.xPos && x < this.xPos + this.w && y > this.yPos && y < this.yPos + this.h ) {
+      return true;
+    }
+    return false;
+  }
+  this.display = function() {
+    fill(0,255);
+    rect(this.xPos, this.yPos, this.w, this.h);
+    fill(255);
+    textSize(40);
+    text("X", 25,40);
   }
 }
 
@@ -439,21 +555,39 @@ function updateColor(color) {
 
 function loadWheel(bool) {
   
-  if (bool == true && !takingPic && appState == 1 ) {
-    console.log(loaded);
+  if (bool == true && !takingPic && appState == 1 && wheelDisabled == false) {
+  
+    // console.log(loaded);
     loaded++;
     push();
     noFill();
-    stroke(0);
+    stroke(255,0,0);
     strokeWeight(10);
     arc(x, y, 60, 60, 0, loaded / 6);
     pop();
     if (loaded/6 >= 2*PI) {
-      console.log('take a pic');
-      takingPic = true;
+      
+      wheelDisabled = true;
+      
+      if (modeBtn.hovered() && editFilter != 1) {
+        editFilter = 1;
+      } else if (sizeBtn.hovered() && editFilter != 2) {
+        editFilter = 2;
+      } else if (colorBtn.hovered() && editFilter != 3) {
+        editFilter = 3;
+      } else if (exitBtn.hovered()) {
+        editFilter = 0;
+      } else if (showMenu == false && editFilter === 0) {
+        console.log('take a pic');
+        takingPic = true;
+      }
     }
+      
   } else {
     loaded = 0;
+    if(bool == false) {
+      wheelDisabled = false;
+    }
   }
 }
 // this function runs every time the leap provides us with hand tracking data
@@ -470,6 +604,19 @@ function handleHandData(frame) {
       loadState = true;
     } else {
       loadState = false;
+    }
+    
+    if(frame.valid && frame.gestures.length > 0){
+      frame.gestures.forEach(function(gesture){
+          switch (gesture.type){
+            case "swipe":
+                if(gesture.state == "start" && swipeCooldown == 0) {
+                  currentFilter.swipe();
+                  swipeCooldown = 15;
+                }
+                break;
+          }
+      });
     }
     
     // grab the x, y & z components of the hand position
